@@ -11,7 +11,7 @@ import pkg/[itertools]
 import helpers/[intcode, shenanigans, utils, vecna]
 
 const
-  dayNum = "00"
+  dayNum = "20"
   inputFile = &"data/day{dayNum}.txt"
 
 

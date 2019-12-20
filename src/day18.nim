@@ -17,6 +17,11 @@ const
   south = [0,1]
   west = [-1,0]
   east = [1,0]
+  inputTest1 = &"data/day{dayNum}test1.txt" # 8 steps
+  inputTest2 = &"data/day{dayNum}test2.txt" # 86 steps
+  inputTest3 = &"data/day{dayNum}test3.txt" # 132 steps
+  inputTest4 = &"data/day{dayNum}test4.txt" # 136 steps
+  inputTest5 = &"data/day{dayNum}test5.txt" # 81 steps
 
 type
   Maze = seq[string]
