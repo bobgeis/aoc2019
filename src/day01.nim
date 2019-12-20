@@ -1,7 +1,7 @@
 
 import math
-import os
 import sequtils
+import strformat
 import strutils
 
 proc calcFuel(mass:int):int =
@@ -27,8 +27,9 @@ proc fromFile(filename: string):seq[string] =
 
 let data = fromFile("data/day01.txt").map(parseInt)
 
-echo "Answer to day1 part1 is: " & $data.map(calcFuel).sum()
-# Answer to day1 part1 is: 3226407
+proc part1*():int =
+  result = data.map(calcFuel).sum()
+  assert result == 3226407
 
 # For part two, we have to add the fuel for each module to its mass and recalc.  Repeating until the increase it 0 or negative
 
@@ -51,4 +52,12 @@ assert 14.calcFuel2 == 2
 assert 1969.calcFuel2 == 966
 assert 100756.calcFuel2 == 50346
 
-echo "Answer to day1 part2 is: " & $data.map(calcFuel2).sum()
+proc part2*():int =
+  result = data.map(calcFuel2).sum()
+  assert result == 4836738
+
+when isMainModule:
+  echo "Day01"
+  echo &"Part1 {part1()}" # 3226407 √
+  echo &"Part2 {part2()}" # 4836738 √
+
