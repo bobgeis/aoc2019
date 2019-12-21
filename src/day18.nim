@@ -31,18 +31,18 @@ let
   inputMaze = inputMazeString.split('\n')
 
 
-proc drawMaze(maze:Maze) =
+proc drawMaze(maze:seq[string]) =
   for row in maze:
     echo row
 
-proc findStart(maze:Maze):Vec2i =
+proc findStart(maze:seq[string]):Vec2i =
   for y,row in maze.pairs:
     for x,c in row:
       if c == '@':
         return [x,y]
 
 
-proc get(maze:Maze,pos:Vec2i):char = maze[pos.y][pos.x]
+proc get(maze:seq[string],pos:Vec2i):char = maze[pos.y][pos.x]
 
 proc getadjacent(pos:Vec2i):seq[Vec2i] =
   result.add (pos + north)
@@ -63,6 +63,8 @@ echo inputMaze.findStart
 # note that for part1 we don't actually care about the path itself, just its length.
 # we can do flood fill to find all the keys
 
+# day 15 does flood fill
+# So lets make a table of vec -> 0,1 for impassable/passable
 
 proc part1*():int =
   result = 1

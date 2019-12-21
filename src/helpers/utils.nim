@@ -3,11 +3,15 @@
 
 import macros, math, strformat, strutils, sugar, tables
 
+proc square*(n:SomeNumber):SomeNumber = n * n
+
+proc flip*[T,U](t:(T,U)):(U,T) = (t[1],t[0]) ## take a two item tuple, and return a tuple of the items in reverse order
+
 proc spy*[T](t:T,msg = ""):T =
   echo &"{msg}{$t}"
   return t
 
-proc toString*[T](t:T):string = $t
+proc toString*[T](t:T):string {.inline.}= $t
 
 proc parseInt*(c:char):int = parseInt($c)
 
