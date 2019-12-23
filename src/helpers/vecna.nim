@@ -41,15 +41,16 @@ template `z=`*[N,A](a:Vec[N,A],b:A):untyped = a[2]= b
 template `w=`*[N,A](a:Vec[N,A],b:A):untyped = a[3]= b
 
 # convenience getters and setters for tables
-template `[]`[N,A,T](t:TableRef[Vec[N,A],T],x,y:A):T = t[[x,y]]
-template `[]=`[N,A,T](t:var TableRef[Vec[N,A],T],x,y:A,val:T) = t[[x,y]] = val
-template `[]`[N,A,T](t:TableRef[Vec[N,A],T],x,y,z:A):T = t[[x,y,z]]
-template `[]=`[N,A,T](t:var TableRef[Vec[N,A],T],x,y,z:A,val:T) = t[[x,y,z]] = val
-template `[]`[N,A,T](t:TableRef[Vec[N,A],T],x,y,z,w:A):T = t[[x,y,z,w]]
-template `[]=`[N,A,T](t:var TableRef[Vec[N,A],T],x,y,z,w:A,val:T) = t[[x,y,z,w]] = val
+template `[]`*[N,A,T](t:TableRef[Vec[N,A],T],x,y:A):T = t[[x,y]]
+template `[]=`*[N,A,T](t:var TableRef[Vec[N,A],T],x,y:A,val:T) = t[[x,y]] = val
+template `[]`*[N,A,T](t:TableRef[Vec[N,A],T],x,y,z:A):T = t[[x,y,z]]
+template `[]=`*[N,A,T](t:var TableRef[Vec[N,A],T],x,y,z:A,val:T) = t[[x,y,z]] = val
+template `[]`*[N,A,T](t:TableRef[Vec[N,A],T],x,y,z,w:A):T = t[[x,y,z,w]]
+template `[]=`*[N,A,T](t:var TableRef[Vec[N,A],T],x,y,z,w:A,val:T) = t[[x,y,z,w]] = val
 
 proc origin*[N,A]():Vec[N,A] = result
 
+# basic vector arithmetic
 proc `+`*[N,A](a,b:Vec[N,A]):Vec[N,A] =
   for i in 0..a.high:
     result[i] = a[i] + b[i]
@@ -59,7 +60,6 @@ proc `-`*[N,A](a,b:Vec[N,A]):Vec[N,A] =
 proc `*`*[N,A](a,b:Vec[N,A]):Vec[N,A] =
   for i in 0..a.high:
     result[i] = a[i] * b[i]
-
 proc `+=`*[N,A](a:var Vec[N,A],b:Vec[N,A]) =
   for i in 0..a.high:
     a[i] = a[i] + b[i]
@@ -69,6 +69,17 @@ proc `-=`*[N,A](a:var Vec[N,A],b:Vec[N,A]) =
 proc `*=`*[N,A](a:var Vec[N,A],b:Vec[N,A]) =
   for i in 0..a.high:
     a[i] = a[i] * b[i]
+
+# scalar arithmetic
+proc `+=`*[N,A](a:var Vec[N,A],s:A) =
+  for i in 0..a.high:
+    a[i] += s
+proc `-=`*[N,A](a:var Vec[N,A],s:A) =
+  for i in 0..a.high:
+    a[i] -= s
+proc `*=`*[N,A](a:var Vec[N,A],s:A) =
+  for i in 0..a.high:
+    a[i] *= s
 
 proc `max=`*[N,A](a:var Vec[N,A],b:Vec[N,A]) =
   for i in 0..a.high:
@@ -163,6 +174,8 @@ when isMainModule:
   assert 8 == a.y
   assert 6 == a.z + a.z
   assert 12 == a.w
+
+  assert [0,0] == origin[2,int]()
 
   var t = newTable[Vec2i,int]()
   t[0,1] = 1

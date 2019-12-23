@@ -33,6 +33,9 @@ proc addInput*(icc:var ICC,input:int) =
 proc addInputs*(icc:var ICC,inputs:seq[int]) =
   for i in inputs: icc.addinput i
 
+proc hasOutput*(icc:ICC):bool =
+  icc.output.len > 0
+
 proc popOutput*(icc: ICC):int =
   icc.output.popFirst
 

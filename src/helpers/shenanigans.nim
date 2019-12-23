@@ -77,6 +77,11 @@ template liftToMap3*(procName,newProcName) =
     for i in 0..<l:
       result[i] = procName(x.getOr(i,pad),y.getOr(i,pad),z.getOr(i,pad))
 
+# https://nim-lang.org/docs/manual.html#macros-debug-example is actually useful, you might want to add it here
+
+
+###
+
 when isMainModule:
   import math, strutils
   import utils
