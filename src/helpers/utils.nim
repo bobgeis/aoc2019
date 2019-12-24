@@ -97,11 +97,81 @@ proc groupsOf*[T](s:seq[T],g:Positive):seq[seq[T]] =
   if sub.len > 0: result.add sub
 
 proc findb*[T](s:openArray[T],t:T):int =
+  ## Find the last offset of the last instance of the item `t` in the sequence `s`.
   for i in countdown(s.high,0):
     if s[i] == t: return i
   return -1
 
+proc pmod*(v,m:int):int =
+  ## Pythonic modulus.  The output will have the same sign as the divisor `m`.
+  runnableExamples:
+    assert 5.pmod(3) == 2 # same as 5 mod 3
+    assert pmod(-5,3) == 1 # -5 mod 3 would give -2
+    assert 5.pmod(-3) == -1 # 5 mod -3 would give 2
+    assert pmod(-5,-3) == -2 # same as 5 mod 3
+  ((v mod m) + m) mod m
+
+proc pdiv*(a,b:int):int =
+  ## Pythonic integer division.  Nim will round towards zero whereas python will always round down.
+  runnableExamples:
+    assert 9.pdiv(2) == 4 # same as 9 div 2
+    assert pdiv(-9,2) == -5 # -9 div 2 would give -4
+    assert 9.pdiv(-2) == -5 # 9 div -2 would give -4
+  result = a div b
+  if a*b < 0: result = result - 1
+
+proc imod*(v,m:int):int =
+  ## Multiplicative inverse in a given modulus.
+  ## Shamelessly copied from: https://bugs.python.org/issue36027
+  ## Find the value x such that (x * v) % m == 1
+  runnableExamples:
+    assert imod(138,191) == 18
+    assert imod(38,191) == 186
+    assert imod(23,120) == 47
+  var
+    x,q = 0
+    lastx = 1
+    a = m
+    b = v
+  while b != 0:
+    (a,q,b) = (b, a div b, a mod b)
+    (x,lastx) = (lastx - q * x, x)
+  result = (1 - lastx * m) div v
+  if result < 0:
+    result += m
+  # assert result.bt(0,m)
+  # assert result * v mod m == 1
+
+proc pow*(x,y,m:int):int =
+  ## Unoptimized implementation of modulus power
+  runnableExamples:
+    assert pow(3, 2, 4) == 1
+    assert pow(10, 9, 6) == 4
+    assert pow(450, 768, 517) == 34
+  if y == 0: return 1
+  var p = pow(x, y div 2, m) mod m
+  p = (p * p) mod m
+  return if (y and 1) == 0: p else: (x * p) mod m
 
 when isMainModule:
   assert @[@[1,2,3],@[4,5,6]].flatten == @[1,2,3,4,5,6]
-  echo "helpers/utils asserts passed!"
+
+  assert 5.pmod(3) == 2 # same as 5 mod 3
+  assert pmod(-5,3) == 1 # -5 mod 3 would give -2
+  assert 5.pmod(-3) == -1 # 5 mod -3 would give 2
+  assert pmod(-5,-3) == -2 # same as 5 mod 3
+
+  assert 9.pdiv(2) == 4 # same as 9 div 2
+  assert pdiv(-9,2) == -5 # -9 div 2 would give -4
+  assert 9.pdiv(-2) == -5 # 9 div -2 would give -4
+
+  assert imod(138,191) == 18
+  assert imod(38,191) == 186
+  assert imod(23,120) == 47
+
+  assert pow(3, 2, 4) == 1
+  assert pow(10, 9, 6) == 4
+  assert pow(450, 768, 517) == 34
+
+  echo "helpers/utils asserts passed"
+

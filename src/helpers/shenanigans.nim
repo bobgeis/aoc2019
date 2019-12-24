@@ -1,5 +1,6 @@
 
 # import math, strutils
+import std/[macros]
 
 # import utils
 
@@ -78,7 +79,22 @@ template liftToMap3*(procName,newProcName) =
       result[i] = procName(x.getOr(i,pad),y.getOr(i,pad),z.getOr(i,pad))
 
 # https://nim-lang.org/docs/manual.html#macros-debug-example is actually useful, you might want to add it here
-
+macro debug*(args: varargs[untyped]): untyped =
+  ## Copied from https://nim-lang.org/docs/manual.html#macros-debug-example
+  # `args` is a collection of `NimNode` values that each contain the
+  # AST for an argument of the macro. A macro always has to
+  # return a `NimNode`. A node of kind `nnkStmtList` is suitable for
+  # this use case.
+  result = nnkStmtList.newTree()
+  # iterate over any argument that is passed to this macro:
+  for n in args:
+    # add a call to the statement list that writes the expression;
+    # `toStrLit` converts an AST to its string representation:
+    result.add newCall("write", newIdentNode("stdout"), newLit(n.repr))
+    # add a call to the statement list that writes ": "
+    result.add newCall("write", newIdentNode("stdout"), newLit(": "))
+    # add a call to the statement list that writes the expressions value:
+    result.add newCall("writeLine", newIdentNode("stdout"), n)
 
 ###
 

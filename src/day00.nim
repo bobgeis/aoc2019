@@ -14,6 +14,7 @@ const
   dayNum = "00"
   inputFile = &"data/day{dayNum}.txt"
 
+proc testFile(i:int):string = &"data/day{dayNum}test{i}"
 
 ### part 1 ###
 
