@@ -1,5 +1,5 @@
 
-## Vectors of N dimensions and Any type.  AKA: Yet Another Simple Vector Lib, but "yasvl" is harder to pronounce.  This was made with my convenience and learning in mind while I did Advent of Code and other exercises.
+## Vectors of N dimensions and Any type.  AKA: Yet Another Simple Vector Lib, but "yasvl" is harder to pronounce.  This was made with my convenience and learning in mind while I did Advent of Code and other exercises.  If you are interested in performance, then you should probably look at something like arraymancer.
 
 # std
 import std/[math, sets, strformat, tables]
@@ -27,8 +27,8 @@ type
   Tab2f*[T] = TableRef[Vec2f,T]
   Tab3i*[T] = TableRef[Vec3i,T]
   Tab3f*[T] = TableRef[Vec3f,T]
-  Tab4i*[T] = TableRef[Vec3i,T]
-  Tab4f*[T] = TableRef[Vec3f,T]
+  Tab4i*[T] = TableRef[Vec4i,T]
+  Tab4f*[T] = TableRef[Vec4f,T]
 
   # common hashsets
   Set2i* = HashSet[Vec2i]
@@ -59,13 +59,12 @@ template `[]`*[A,T](t:TableRef[Vec[4,A],T],x,y,z,w:A):T = t[[x,y,z,w]]
 template `[]=`*[A,T](t:var TableRef[Vec[4,A],T],x,y,z,w:A,val:T) = t[[x,y,z,w]] = val
 
 proc origin*[N,A]():Vec[N,A] = result
-const
-  ori2i* = origin[2,int]()
-  ori2f* = origin[2,float]()
-  ori3i* = origin[3,int]()
-  ori3f* = origin[3,float]()
-  ori4i* = origin[4,int]()
-  ori4f* = origin[4,float]()
+proc lowest*[N,A]():Vec[N,A] =
+  for i in 0..result.high:
+    result[i] = A.low
+proc highest*[N,A]():Vec[N,A] =
+  for i in 0..result.high:
+    result[i] = A.high
 
 # basic vector arithmetic
 proc `+`*[N,A](a,b:Vec[N,A]):Vec[N,A] =
@@ -173,32 +172,34 @@ proc angle*[A](a:Vec[2,A]):float = arctan2(a.y.float,a.x.float)
 proc angle*[A](a,b:Vec[2,A]):float = arctan2((b.y-a.y).float, (b.x-a.x).float)
 proc angle*[N,A](a,b:Vec[N,A]):float = arccos( (a *. b) / ( a.mag * b.mag) )
 
-proc aabb*[A](a,c1,c2:Vec[2,A]):bool =
-  ## Is point `a` within a aabb/rectangle described by two opposing corners `c1` and `c2`?
-  a.x.bt(c1.x,c2.x) and a.y.bt(c1.y,c2.y)
+proc aabb*[N,A](a,c1,c2:Vec[N,A]):bool =
+  ## Is point `a` within an axis-aligned bounding box described by two opposing corners `c1` and `c2`?
+  for i in 0..a.high:
+    if not a[i].bt(c1[i],c2[i]): return false
+  return true
 
 proc onseg*[A](a,p1,p2:Vec[2,A]):bool =
   ## Is the point `a` on the line segment `p1` to `p2`?
   a.aabb(p1,p2) and ((a.x - p1.x)/(p2.x - p1.x) == (a.y - p1.y)/(p2.y - p1.y))
 
-proc getMinMax*[T](t:Tab2i[T]):(Vec2i,Vec2i) =
-  ## Given a table with Vec2i keys, get a tuple of (mins,maxs) where mins and maxs are Vec2i of the lowest and highest of each coordinate.  Useful for iterating over all the Vec2i in a table in order.
+proc getMinMax*[N,T](t:TableRef[Vec[N,int],T]):(Vec[N,int],Vec[N,int]) =
+  ## Get a vector of all the minimum values for each coordinate and a vector of all the maximum values for each coordinate among the keys of the given vector table.
   var
-    mins = [int.high,int.high]
-    maxs = [int.low,int.low]
+    mins = highest[N,int]()
+    maxs = lowest[N,int]()
   for k in t.keys:
     mins.min= k
     maxs.max= k
   return (mins,maxs)
 
-proc getMinMax*[T](t:Tab3i[T]):(Vec3i,Vec3i) =
-  ## Given a table with Vec3i keys, get a tuple of (mins,maxs) where mins and maxs are Vec3i of the lowest and highest of each coordinate.  Useful for iterating over all the Vec3i in a table in order.
+proc getMinMax*[N](hs:HashSet[Vec[N,int]]):(Vec[N,int],Vec[N,int]) =
+  ## Get a vector of all the minimum values for each coordinate and a vector of all the maximum values for each coordinate among the keys of the given vector hashset.
   var
-    mins = [int.high,int.high,int.high]
-    maxs = [int.low,int.low,int.low]
-  for k in t.keys:
-    mins.min= k
-    maxs.max= k
+    mins = highest[N,int]()
+    maxs = lowest[N,int]()
+  for item in hs.items:
+    mins.min= item
+    maxs.max= item
   return (mins,maxs)
 
 iterator grid*[T](t:Tab2i[T]):Vec2i =
@@ -206,6 +207,21 @@ iterator grid*[T](t:Tab2i[T]):Vec2i =
   for y in mins.y..maxs.y:
     for x in mins.x..maxs.x:
       yield [x,y]
+
+iterator grid*[T](t:Tab3i[T]):Vec3i =
+  let (mins,maxs) = t.getMinMax
+  for z in mins.z..maxs.z:
+    for y in mins.y..maxs.y:
+      for x in mins.x..maxs.x:
+        yield [x,y,z]
+
+iterator grid*[T](t:Tab4i[T]):Vec4i =
+  let (mins,maxs) = t.getMinMax
+  for w in mins.w..maxs.w:
+    for z in mins.z..maxs.z:
+      for y in mins.y..maxs.y:
+        for x in mins.x..maxs.x:
+          yield [x,y,z,w]
 
 proc drawTab*[T](t:Tab2i[T],p:proc(v:Vec2i):char):string =
   var yPrev:int
@@ -262,6 +278,7 @@ proc toVec4*[A](v: openArray[A],default:A):Vec[4,A] =
 # set magnitude (norm * scalar mult)
 # clamp magnitude
 # vector table slicing
+# make `grid` generic across vector lengths (template/macro)
 
 when isMainModule:
 
@@ -284,7 +301,6 @@ when isMainModule:
   assert 12 == a.w
 
   assert [0,0] == origin[2,int]()
-  assert ori4i == [0,0,0,0]
 
   var t = newTable[Vec2i,int]()
   t[0,1] = 1

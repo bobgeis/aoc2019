@@ -70,7 +70,6 @@ proc toMoveTab(ctab:Tab2i[char]):(Tab2i[seq[Vec2i]],Vec2i,Vec2i) =
 # echo testFile(1).toCharTab.toMoveTab
 # testFile(2).toCharTab.toMoveTab
 
-
 proc walk(ctab:Tab2i[char]):int =
   let
     (mtab,start,stop) = ctab.toMoveTab
