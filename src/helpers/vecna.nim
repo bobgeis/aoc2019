@@ -7,7 +7,7 @@ import std/[math, sets, strformat, tables]
 # nimble
 
 # local
-import utils
+import utils, shenanigans
 
 type
   Vec*[N: static[int]; A] = array[N,A]
@@ -201,22 +201,56 @@ proc getMinMax*[T](t:Tab3i[T]):(Vec3i,Vec3i) =
     maxs.max= k
   return (mins,maxs)
 
-proc drawTab*[T](t:Tab2i[T],p:proc(t:Tab2i[T],v:Vec2i):char):string =
+iterator grid*[T](t:Tab2i[T]):Vec2i =
   let (mins,maxs) = t.getMinMax
   for y in mins.y..maxs.y:
     for x in mins.x..maxs.x:
-      result.add t.p([x,y])
-    result.add '\n'
+      yield [x,y]
 
-proc drawTab*[T](t:Tab3i[T],p:proc(t:Tab3i,v:Vec3i):char):string =
-  let (mins,maxs) = t.getMinMax
-  for z in mins.z..maxs.z:
-    result.add &"z={z}"
-    for y in mins.y..maxs.y:
-      for x in mins.x..maxs.x:
-        result.add t.p([x,y,z])
+proc drawTab*[T](t:Tab2i[T],p:proc(v:Vec2i):char):string =
+  var yPrev:int
+  for v in t.grid():
+    if v.y != yPrev:
+      yPrev = v.y
       result.add '\n'
-    result.add '\n'
+    result.add p(v)
+
+proc drawTab*[T](t:Tab3i[T],p:proc(v:Vec3i):char):string =
+  var zPrev, yPrev:int
+  for v in t.grid():
+    if v.z != zPrev:
+      zPrev = v.z
+      result.add &"z={v.z}\n"
+    if v.y != yPrev:
+      yPrev = v.y
+      result.add '\n'
+    result.add p(v)
+
+proc toVec2*[A](v: openArray[A]):Vec[2,A] =
+  ## Trim a longer vec, array, or seq to a Vec2
+  for i in 0..1:
+    result[i] = v[i]
+proc toVec3*[A](v: openArray[A]):Vec[3,A] =
+  ## Trim a longer vec, array, or seq to a Vec3
+  for i in 0..2:
+    result[i] = v[i]
+proc toVec4*[A](v: openArray[A]):Vec[4,A] =
+  ## Trim a longer vec, array, or seq to a Vec4
+  for i in 0..3:
+    result[i] = v[i]
+
+proc toVec2*[A](v: openArray[A],default:A):Vec[2,A] =
+  ## Expand a shorter vec, array or sec to a Vec2 using a default value
+  for i in 0..1:
+    result[i] = v.getOr(i,default)
+proc toVec3*[A](v: openArray[A],default:A):Vec[3,A] =
+  ## Expand a shorter vec, array or sec to a Vec3 using a default value
+  for i in 0..2:
+    result[i] = v.getOr(i,default)
+proc toVec4*[A](v: openArray[A],default:A):Vec[4,A] =
+  ## Expand a shorter vec, array or sec to a Vec4 using a default value
+  for i in 0..3:
+    result[i] = v.getOr(i,default)
 
 
 # TODO

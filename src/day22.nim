@@ -1,14 +1,9 @@
 
 # std lib modules https://nim-lang.org/docs/lib.html
-import std/[algorithm, deques, math, options, os, sequtils, sets, strformat, strscans, strtabs, strutils, sugar, tables]
+import std/[sequtils, strformat, strscans]
 
 # nimble pkgs
-import pkg/[itertools,stint]
-# docs https://narimiran.github.io/itertools/index.html
-# repo https://github.com/narimiran/itertools
-
-# local modules
-import helpers/[intcode, shenanigans, utils, vecna]
+import pkg/[stint]
 
 type
   ShuffleOp = enum

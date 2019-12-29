@@ -3,7 +3,7 @@
 import algorithm, math, sequtils, strformat, sugar, tables
 
 # local modules
-import helpers/utils
+import helpers/[shenanigans, utils]
 
 type
   Point = tuple[x:int,y:int]

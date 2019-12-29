@@ -3,9 +3,7 @@
 import std/[algorithm, deques, math, options, os, sequtils, sets, strformat, strscans, strtabs, strutils, sugar, tables]
 
 # nimble pkgs
-import pkg/[itertools]
-# docs https://narimiran.github.io/itertools/index.html
-# repo https://github.com/narimiran/itertools
+import pkg/[itertools, stint]
 
 # local modules
 import helpers/[intcode, shenanigans, utils, vecna]

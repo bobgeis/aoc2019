@@ -23,6 +23,8 @@ const
   inputTest4 = &"data/day{dayNum}test4.txt" # 136 steps
   inputTest5 = &"data/day{dayNum}test5.txt" # 81 steps
 
+proc testFile(i:int):string = &"data/day{dayNum}test{i}.txt"
+
 type
   Maze = seq[string]
 
