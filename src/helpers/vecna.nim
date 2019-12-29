@@ -99,6 +99,12 @@ proc `*`*[N,A](a:Vec[N,A],s:A):Vec[N,A] =
 proc `/`*[N,A](a:Vec[N,A],s:A):Vec[N,A] =
   for i in 0..a.high:
     result[i] = a[i] / s
+proc `div`*[N,A](a:Vec[N,A],s:A):Vec[N,A] =
+  for i in 0..a.high:
+    result[i] = a[i] div s
+proc `mod`*[N,A](a:Vec[N,A],s:A):Vec[N,A] =
+  for i in 0..a.high:
+    result[i] = a[i] mod s
 proc `+=`*[N,A](a:var Vec[N,A],s:A) =
   for i in 0..a.high:
     a[i] += s
@@ -224,7 +230,7 @@ iterator grid*[T](t:Tab4i[T]):Vec4i =
           yield [x,y,z,w]
 
 proc drawTab*[T](t:Tab2i[T],p:proc(v:Vec2i):char):string =
-  var yPrev:int
+  var yPrev = int.high
   for v in t.grid():
     if v.y != yPrev:
       yPrev = v.y
@@ -232,11 +238,11 @@ proc drawTab*[T](t:Tab2i[T],p:proc(v:Vec2i):char):string =
     result.add p(v)
 
 proc drawTab*[T](t:Tab3i[T],p:proc(v:Vec3i):char):string =
-  var zPrev, yPrev:int
+  var zPrev, yPrev = int.high
   for v in t.grid():
     if v.z != zPrev:
       zPrev = v.z
-      result.add &"z={v.z}\n"
+      result.add &"\n\nz={v.z}"
     if v.y != yPrev:
       yPrev = v.y
       result.add '\n'
@@ -256,15 +262,15 @@ proc toVec4*[A](v: openArray[A]):Vec[4,A] =
     result[i] = v[i]
 
 proc toVec2*[A](v: openArray[A],default:A):Vec[2,A] =
-  ## Expand a shorter vec, array or sec to a Vec2 using a default value
+  ## Expand a shorter vec, array or seq to a Vec2 using a default value
   for i in 0..1:
     result[i] = v.getOr(i,default)
 proc toVec3*[A](v: openArray[A],default:A):Vec[3,A] =
-  ## Expand a shorter vec, array or sec to a Vec3 using a default value
+  ## Expand a shorter vec, array or seq to a Vec3 using a default value
   for i in 0..2:
     result[i] = v.getOr(i,default)
 proc toVec4*[A](v: openArray[A],default:A):Vec[4,A] =
-  ## Expand a shorter vec, array or sec to a Vec4 using a default value
+  ## Expand a shorter vec, array or seq to a Vec4 using a default value
   for i in 0..3:
     result[i] = v.getOr(i,default)
 
