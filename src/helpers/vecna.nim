@@ -23,12 +23,18 @@ type
   Vec2i64* = Vec[2,int64]
 
   # common tables
-  Tab2i*[T] = TableRef[Vec2i,T]
-  Tab2f*[T] = TableRef[Vec2f,T]
-  Tab3i*[T] = TableRef[Vec3i,T]
-  Tab3f*[T] = TableRef[Vec3f,T]
-  Tab4i*[T] = TableRef[Vec4i,T]
-  Tab4f*[T] = TableRef[Vec4f,T]
+  Tab2i*[T] = Table[Vec2i,T]
+  Tab2f*[T] = Table[Vec2f,T]
+  Tab3i*[T] = Table[Vec3i,T]
+  Tab3f*[T] = Table[Vec3f,T]
+  Tab4i*[T] = Table[Vec4i,T]
+  Tab4f*[T] = Table[Vec4f,T]
+  # TabR2i*[T] = TableRef[Vec2i,T]
+  # TabR2f*[T] = TableRef[Vec2f,T]
+  # TabR3i*[T] = TableRef[Vec3i,T]
+  # TabR3f*[T] = TableRef[Vec3f,T]
+  # TabR4i*[T] = TableRef[Vec4i,T]
+  # TabR4f*[T] = TableRef[Vec4f,T]
 
   # common hashsets
   Set2i* = HashSet[Vec2i]
@@ -189,6 +195,16 @@ proc onseg*[A](a,p1,p2:Vec[2,A]):bool =
   a.aabb(p1,p2) and ((a.x - p1.x)/(p2.x - p1.x) == (a.y - p1.y)/(p2.y - p1.y))
 
 proc getMinMax*[N,T](t:TableRef[Vec[N,int],T]):(Vec[N,int],Vec[N,int]) =
+  ## Get a vector of all the minimum values for each coordinate and a vector of all the maximum values for each coordinate among the keys of the given vector table.
+  var
+    mins = highest[N,int]()
+    maxs = lowest[N,int]()
+  for k in t.keys:
+    mins.min= k
+    maxs.max= k
+  return (mins,maxs)
+
+proc getMinMax*[N,T](t:Table[Vec[N,int],T]):(Vec[N,int],Vec[N,int]) =
   ## Get a vector of all the minimum values for each coordinate and a vector of all the maximum values for each coordinate among the keys of the given vector table.
   var
     mins = highest[N,int]()

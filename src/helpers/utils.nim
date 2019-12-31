@@ -13,6 +13,10 @@ proc spy*[T](t:T,msg = ""):T = # For when you want to echo something in the midd
 
 proc toString*[T](t:T):string {.inline.}= $t ## For when you want to turn something into a string in the middle of a chain of proc calls.
 
+proc getOr*[T](s: openArray[T], i:int, def:T):T =
+  ## GetOrDefault for sequences
+  if i < s.len: s[i] else: def
+
 proc parseInt*(c:char):int = parseInt($c)
 
 proc reversed*[T](s:seq[T]):seq[T] =
@@ -75,7 +79,7 @@ proc groupsOf*[T](s:seq[T],g:Positive):seq[seq[T]] =
   if sub.len > 0: result.add sub
 
 proc findb*[T](s:openArray[T],t:T):int =
-  ## Find the last offset of the last instance of the item `t` in the sequence `s`.
+  ## Find backwards: find the offset of the last instance of the item `t` in the sequence `s`.
   for i in countdown(s.high,0):
     if s[i] == t: return i
   return -1

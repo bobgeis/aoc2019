@@ -84,6 +84,7 @@ proc walk(ctab:Tab2i[char]):int =
       return if steptab.haskey(v): 'O'
         else: ctab.getOrDefault(v,' ')
     echo ctab.drawTab(p)
+    # discard stdin.readline()
   while q.len > 0:
     remaining = q.len
     steps += 1

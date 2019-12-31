@@ -1,4 +1,4 @@
-## This file contains procs and macros.  Some of the things here were copied from or inspired by the work of others (eg debug which is an example macro from the nim manual).  Other things are of dubious value and/or probably not best practice.
+## This file contains procs and macros.  Some of the things here were copied from or inspired by the work of others (eg debug which is an example macro from the nim manual).  Other things are of dubious value and/or probably not best practice.  Mostly this is for experimenting.
 
 
 # import math, strutils
@@ -6,9 +6,6 @@ import std/[macros, tables]
 
 # import utils
 
-proc getOr*[T](s: openArray[T], i:int, def:T):T =
-  ## GetOrDefault for sequences
-  if i < s.len: s[i] else: def
 
 macro debug*(args: varargs[untyped]): untyped =
   ## A debugging macro that echos the given expression, both literally, and the resulting value.
