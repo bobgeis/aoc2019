@@ -10,6 +10,15 @@ const
 var
   fast = ""
 
+proc echoExec(cmd:string) =
+  echo cmd
+  exec cmd
+
+proc echoSelfExec(cmd:string) =
+  echo &"nim {cmd}"
+  selfexec cmd
+
+
 proc parseArgs():seq[string] =
   if paramCount() < 2: return @[]
   for i in 2..paramCount():
@@ -24,13 +33,13 @@ task day, "Build and run the and day(s), eg `nim day 1 2`, or give no days to ru
     for dayNum in 0..25:
       let path = &"{nimSrcDir}/day{dayNum:02}.nim"
       if fileExists(path):
-        selfExec &"runc --hints=off --warnings=off {fast} -o:{nimOutDir}/day{dayNum:02} {path}"
+        echoSelfExec &"runc --hints=off --warnings=off {fast} -o:{nimOutDir}/day{dayNum:02} {path}"
   for d in days:
     let
       dayNum = d.parseInt
       path = &"{nimSrcDir}/day{dayNum:02}.nim"
     if fileExists(path):
-      selfExec &"runc --hint[Conf]=off {fast} -o:{nimOutDir}/day{dayNum:02} {path}"
+      echoSelfExec &"runc --hint[Conf]=off {fast} -o:{nimOutDir}/day{dayNum:02} {path}"
     else:
       echo &"Could not find nim file for {path}."
 
@@ -40,12 +49,12 @@ task lib, "Build and run named nim lib file(s) or all of them (with no name)":
     for file in listFiles(&"{nimLibDir}"):
       let (_,fname,ext) = file.splitFile
       if ext == ".nim":
-        selfExec &"runc --hints=off --warnings=off {fast} -o:{nimOutDir}/{fname} {file}"
+        echoSelfExec &"runc --hints=off --warnings=off {fast} -o:{nimOutDir}/{fname} {file}"
   for fname in fnames:
     let
       path = &"{nimLibDir}/{fname}.nim"
     if fileExists(path):
-      selfExec &"runc --hint[Conf]=off {fast} -o:{nimOutDir}/lib_{fname} {path}"
+      echoSelfExec &"runc --hint[Conf]=off {fast} -o:{nimOutDir}/lib_{fname} {path}"
     else:
       echo &"Could not find nim file for {path}"
 
@@ -70,10 +79,14 @@ task time, "build, run, time the named file(s) in the nim source dir":
       path = &"{nimSrcDir}/{fname}.nim"
     if path.fileExists:
       selfExec &"c --hints=off --warnings=off {fast} -o:{nimOutDir}/time_{fname} {path}"
-      echo &"Compile command: 'nim c --hints=off --warnings=off {fast} -o:{nimOutDir}/time_{fname} {path}'\nRun command: 'time ./{nimOutDir}/time_{fname}'"
-      exec &"time ./{nimOutDir}/time_{fname}"
+      echoExec &"time ./{nimOutDir}/time_{fname}"
     else:
       echo &"Could not find nim file for {path}"
 
 task clean, "delete the out directory":
-  exec &"rm -rf {nimOutDir}"
+  if not dirExists(nimOutDir):
+    echo &"nimOutDir: `{nimOutDir}` does not exist!"
+  elif "out" != nimOutDir:
+    echo $"nimOutDir was `{nimOutDir}` instead of `out`, is this correct?"
+  else:
+    echoExec &"rm -rf {nimOutDir}"
